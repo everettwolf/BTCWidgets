@@ -10,9 +10,14 @@ BTC Styles
     vertical-align: middle;
     width: 70%;
     font-family: Arial, Helvetica, sans-serif !important;
+    font-size: 11px;
+    font-weight: bold;
 }
 #watchnow a:hover {
     color: #136AA8;
+}
+#watchnow a:link {
+    text-decoration: none;
 }
  #widget-title-in-btc {
     line-height: 22px;
@@ -27,7 +32,7 @@ BTC Styles
 .widget-btc-320x165 {
     position: relative;
     padding: 0px;
-    height: 188px;
+    height: 135px;
     z-index:9999;
     width: 300px;
     background-color: #f2f2f2;
