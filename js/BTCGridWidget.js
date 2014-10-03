@@ -307,8 +307,8 @@
 
          function writeDiv(xml, id) {
             //console.log(JSON.stringify(xml));
-            if(getUrlParameter('cl') =='true'){
-                console.log('BTC Log: Hiding Grid for Church Lady');
+            if(getUrlParameter('cl') =='true' || getUrlParameter('nts') == 'true' || getUrlParameter('dt') == 'true'){
+                console.log('BTC Log: Hiding Grid for direct video play');
 				$j('#tier-1').hide();
 				$j('#tier-2').hide();
 				$j('#tier-3').hide();
@@ -334,6 +334,14 @@
             if(getUrlParameter('cl') == 'true'){
             	console.log('BTC Log: diverting to Church Lady');
                 playVideo('Church Lady', 'Dana Carvey', '78e61e85e7e24006a530a7e9ecae1138');
+			}
+			if(getUrlParameter('nts') == 'true'){
+            	console.log('BTC Log: diverting to Note To Self');
+                playVideo('Note to Self', 'Julianne Moore', '3c6959a4501048ec89e5cb6e8bdc1077');
+			}
+			if(getUrlParameter('dt') == 'true'){
+            	console.log('BTC Log: diverting to Deep Thoughts');
+                playVideo('Deep Thoughts', 'Jack Handey', '2a6cf260e9974037aa07da50b6c19d95');
 			}
         }
 
@@ -399,8 +407,8 @@
             $j('#pagetitle h1').html(name);
             $j('#pagetitle h2').html('with ' + voice);
             var playlist;
-            if(embed_code == '78e61e85e7e24006a530a7e9ecae1138'){
-            	console.log('BTC Log: guaranteeing CL Playlist');
+            if(embed_code == '78e61e85e7e24006a530a7e9ecae1138' || embed_code == '3c6959a4501048ec89e5cb6e8bdc1077' || embed_code == '2a6cf260e9974037aa07da50b6c19d95'){
+            	console.log('BTC Log: guaranteeing CL or NTS Playlist');
                playlist = embed_code;
 			}else{
 				playlist = playlists['mt ' + name.toLowerCase()];
