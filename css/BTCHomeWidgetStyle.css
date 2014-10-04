@@ -1,23 +1,33 @@
 /**********
 BTC Styles
 **********/
+#blurb{
+    font-family: "Georgia, serif";
+    font-size: 18px;
+    padding-bottom: 3px;
+    padding-top: 2px;
+    
+}
 #watchnow{
-    /*padding-left: 20px;
-    padding-top: 1px;
-    padding-bottom: -2px;*/
-    margin-left: auto;
-    margin-right: auto;
+    display: table;
+    margin: 0 auto;
     vertical-align: middle;
-    width: 70%;
+    width: 95%;
     font-family: Arial, Helvetica, sans-serif !important;
-    font-size: 11px;
-    font-weight: bold;
+    /*font-family: "Comic Sans MS", cursive, sans-serif;*/
+    font-size: 13px;
+    /*font-weight: bold;*/
+    padding-top: 4px;
 }
 #watchnow a:hover {
     color: #136AA8;
 }
 #watchnow a:link {
     text-decoration: none;
+}
+#watchnow a img {
+    display:block;
+    margin:auto;
 }
  #widget-title-in-btc {
     line-height: 22px;
@@ -32,7 +42,7 @@ BTC Styles
 .widget-btc-320x165 {
     position: relative;
     padding: 0px;
-    height: 135px;
+    height: 195px;
     z-index:9999;
     width: 300px;
     background-color: #f2f2f2;
@@ -71,7 +81,7 @@ BTC Styles
 }
 .playbtn-btc-320x165 {
     position:absolute;
-    left:140px;
+    left:130px;
     top:50px;
     width: 65px;
     height: 65px;

@@ -102,11 +102,12 @@
         btc.parentNode.insertBefore(btc_div, btc);
 
         //Load the HTML
+        $j('#widget-home-btc').append('<div id="blurb">Daily 10 Seconds with Dana Carvey</div>');
         $j('#widget-home-btc').append('<div class="btc-widget-left"></div>');
         $j('.btc-widget-left').append('<div class="widget-btc-' + WIDGET_SIZE + '"></div>');
         //menu
         $j('.widget-btc-' + WIDGET_SIZE + '').append('<div class="header-btc" id="widget-header-btc"></div>');
-        $j('.widget-btc-' + WIDGET_SIZE + '').append('<span id="watchnow">Daily comics with Dana Carvey + friends. <a href="http://www.charlotteobserver.com/beyondcomics"><b>Watch Here &#187;</a></b></span>');
+        $j('.widget-btc-' + WIDGET_SIZE + '').append('<span id="watchnow">Watch new comics voiced by Dana Carvey, David Spade, Julianne Moore, Chris Rock and many more!<br><a href="http://www.charlotteobserver.com/beyondcomics"><img src="' + BASE_HREF + '/img/watchnow.png"></img></span>');
         //$j('.widget-btc-' + WIDGET_SIZE + '').append('<div class="suspensor-btc" ></div>');
         //$j('.suspensor-btc').append('<div><img src="' + BASE_HREF + '/img/PineBros' + WIDGET_SIZE + '.png"></img></div>');
         $j('.widget-btc-' + WIDGET_SIZE + '').append('<div class="openB-btc"></div>');
