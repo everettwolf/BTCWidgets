@@ -307,7 +307,10 @@
 
          function writeDiv(xml, id) {
             //console.log(JSON.stringify(xml));
-            if(getUrlParameter('cl') =='true' || getUrlParameter('nts') == 'true' || getUrlParameter('dt') == 'true'){
+            if(getUrlParameter('cl') =='true' || getUrlParameter('nts') == 'true' || getUrlParameter('dt') == 'true'
+            || getUrlParameter('tmts') =='true' || getUrlParameter('ww') =='true' || getUrlParameter('ht') =='true' 
+            || getUrlParameter('cic') =='true' || getUrlParameter('dar') =='true' || getUrlParameter('sc') =='true' 
+            || getUrlParameter('dip') =='true'){
                 console.log('BTC Log: Hiding Grid for direct video play');
 				$j('#tier-1').hide();
 				$j('#tier-2').hide();
@@ -342,6 +345,34 @@
 			if(getUrlParameter('dt') == 'true'){
             	console.log('BTC Log: diverting to Deep Thoughts');
                 playVideo('Deep Thoughts', 'Jack Handey', '2a6cf260e9974037aa07da50b6c19d95');
+			}
+            if(getUrlParameter('tmts') == 'true'){
+            	console.log('BTC Log: diverting to 2 Minute Talk Show');
+                playVideo('2 Minute Talk Show', 'Dana Carvey', 'd9e4490dd2d49bd99f396eba77d691e');
+			}
+            if(getUrlParameter('ww') == 'true'){
+            	console.log('BTC Log: diverting to Wonder Why Your Relationship Ended?');
+                playVideo('Wonder Why Your Relationship Ended?', 'David Spade', '335f8d10ef854716869baf5d7eebf278');
+			}
+            if(getUrlParameter('ht') == 'true'){
+            	console.log('BTC Log: diverting to Hypochondriac Thoughts for the Day');
+                playVideo('Hypochondriac Thoughts for the Day', 'Kevin Nealon', 'b65ba58e527440c2af8a76f5802d3e89');
+			}
+            if(getUrlParameter('cic') == 'true'){
+            	console.log('BTC Log: diverting to Cursing Into A Cellphone');
+                playVideo('Cursing Into A Cellphone', 'Ana Faris', '3a1e66d904f7474b838ab535814b8900');
+			}
+            if(getUrlParameter('dar') == 'true'){
+            	console.log('BTC Log: diverting to Dude and Rockstar');
+                playVideo('Dude and Rockstar', 'David Spade and Colin Quinn', '1d147af5985a49a4b103f0ebca9d1147');
+			}
+            if(getUrlParameter('sc') == 'true'){
+            	console.log('BTC Log: diverting to Sketchy Coffee');
+                playVideo('Sketchy Coffee', 'Sarah Silverman', 'd68814b9b148430cb677ae0290f229af');
+			}
+            if(getUrlParameter('dip') == 'true'){
+            	console.log('BTC Log: diverting to Dog In Purse');
+                playVideo('Dog In Purse', 'David Spade', 'cca9d0ef42e043eea2f20ee880ed8806');
 			}
         }
 
@@ -407,7 +438,11 @@
             $j('#pagetitle h1').html(name);
             $j('#pagetitle h2').html('with ' + voice);
             var playlist;
-            if(embed_code == '78e61e85e7e24006a530a7e9ecae1138' || embed_code == '3c6959a4501048ec89e5cb6e8bdc1077' || embed_code == '2a6cf260e9974037aa07da50b6c19d95'){
+            if(embed_code == '78e61e85e7e24006a530a7e9ecae1138' || embed_code == '3c6959a4501048ec89e5cb6e8bdc1077' 
+            || embed_code == '2a6cf260e9974037aa07da50b6c19d95' || embed_code == 'd9e4490dd2d49bd99f396eba77d691e'
+            || embed_code == '335f8d10ef854716869baf5d7eebf278' || embed_code == 'b65ba58e527440c2af8a76f5802d3e89'
+            || embed_code == '3a1e66d904f7474b838ab535814b8900' || embed_code == '1d147af5985a49a4b103f0ebca9d1147'
+            || embed_code == 'd68814b9b148430cb677ae0290f229af' || embed_code == 'cca9d0ef42e043eea2f20ee880ed8806' ){
             	console.log('BTC Log: guaranteeing CL or NTS Playlist');
                playlist = embed_code;
 			}else{
