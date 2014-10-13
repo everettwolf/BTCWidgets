@@ -281,7 +281,7 @@
                 },
                 error: function (xml) {
                     console.log("BTC Log: Can't connect to video server to retrieve playlists");
-                    alert("can't connect to video server to retrieve playlists");
+                    //alert("can't connect to video server to retrieve playlists");
                 }
             });
         }
@@ -299,7 +299,7 @@
                 },
                 error: function (xml) {
                     console.log("BTC Log: Can't connect to video server to retrieve " + tier + " videos");
-                    alert("can't connect to video server");
+                    //alert("can't connect to video server");
                 }
             });
         }
@@ -310,7 +310,8 @@
             if(getUrlParameter('cl') =='true' || getUrlParameter('nts') == 'true' || getUrlParameter('dt') == 'true'
             || getUrlParameter('tmts') =='true' || getUrlParameter('ww') =='true' || getUrlParameter('ht') =='true' 
             || getUrlParameter('cic') =='true' || getUrlParameter('dar') =='true' || getUrlParameter('sc') =='true' 
-            || getUrlParameter('dip') =='true'){
+            || getUrlParameter('dip') =='true' || getUrlParameter('ih') =='true' || getUrlParameter('ppc') =='true'
+            || getUrlParameter('tjig') =='true'|| getUrlParameter('lfk') =='true'){
                 console.log('BTC Log: Hiding Grid for direct video play');
 				$j('#tier-1').hide();
 				$j('#tier-2').hide();
@@ -374,6 +375,23 @@
             	console.log('BTC Log: diverting to Dog In Purse');
                 playVideo('Dog In Purse', 'David Spade', 'cca9d0ef42e043eea2f20ee880ed8806');
 			}
+            if(getUrlParameter('ih') == 'true'){
+            	console.log('BTC Log: diverting to I, Hippie');
+                playVideo('I, Hippie', 'Dana Carvey', '3c49534a6462437883a9d029ed5cffcd');
+			}
+            if(getUrlParameter('ppc') == 'true'){
+            	console.log('BTC Log: diverting to Presidential Phone Calls');
+                playVideo('Presidential Phone Calls', 'Dana Carvey', '6a655b58bc8349d69df33ef644f9f4d5');
+			}
+			if(getUrlParameter('tjig') == 'true'){
+            	console.log('BTC Log: diverting to Daily 10 Seconds with Dana Carvey');
+                playVideo('Daily 10 Seconds with Dana Carvey', 'Dana Carvey', '60b2225e790046d6ad7eef04b59a2432');
+			}
+			if(getUrlParameter('lfk') == 'true'){
+            	console.log('BTC Log: diverting to Letters From Kids');
+                playVideo('Letters From Kids', 'Sara Wolf', '87ef677dfc0844d1b44961ac58a405ae');
+			}
+			
         }
 
         /*function writeArchiveList(xml) {
@@ -442,7 +460,9 @@
             || embed_code == '2a6cf260e9974037aa07da50b6c19d95' || embed_code == 'd9e4490dd2d49bd99f396eba77d691e'
             || embed_code == '335f8d10ef854716869baf5d7eebf278' || embed_code == 'b65ba58e527440c2af8a76f5802d3e89'
             || embed_code == '3a1e66d904f7474b838ab535814b8900' || embed_code == '1d147af5985a49a4b103f0ebca9d1147'
-            || embed_code == 'd68814b9b148430cb677ae0290f229af' || embed_code == 'cca9d0ef42e043eea2f20ee880ed8806' ){
+            || embed_code == 'd68814b9b148430cb677ae0290f229af' || embed_code == 'cca9d0ef42e043eea2f20ee880ed8806' 
+            || embed_code == '3c49534a6462437883a9d029ed5cffcd' || embed_code == '6a655b58bc8349d69df33ef644f9f4d5'
+            || embed_code == '60b2225e790046d6ad7eef04b59a2432' || embed_code == '87ef677dfc0844d1b44961ac58a405ae'){
             	console.log('BTC Log: guaranteeing CL or NTS Playlist');
                playlist = embed_code;
 			}else{

@@ -1,9 +1,15 @@
 (function () {
+	var pathname = window.location.pathname;
+	if(pathname === '/beyondcomics/' || pathname === '/895' || 1===1) {
+		return;
+	}
     var BASE_HREF = 'http://' + document.getElementById("BTCHomeWidget").getAttribute("data-env");
     var WIDGET_SIZE = document.getElementById("BTCHomeWidget").getAttribute("data-size");
+    var OPEN_VAL = document.getElementById("BTCHomeWidget").getAttribute("data-open");
 
     console.log("BTC Log: Environment: " + BASE_HREF);
     console.log("BTC Log: Widget size: " + WIDGET_SIZE);
+    console.log("BTC Log: Widget opens: " + OPEN_VAL);
     //Load Scripts
     var script;
     // Load jQuery
@@ -17,11 +23,17 @@
     script.src = BASE_HREF + '/js/CryptoJS.js';
     script.type = 'application/javascript';
     document.getElementsByTagName("head")[0].appendChild(script);
+    
+    //load JYPlayer
+    script = document.createElement("SCRIPT");
+    script.src = 'http://player.ooyala.com/v3/8429b6a60f6e42c493657dd629122e66?namespace=JYPlayer';
+    script.type = 'application/javascript';
+    document.getElementsByTagName("head")[0].appendChild(script);
 
     // Poll for jQuery and CryptoJS to come into existance
     var checkReady = function (callback) {
-        if (window.CryptoJS && window.jQuery && window.jQuery.fn.jquery === '1.10.2') {
-            callback((window.CryptoJS && window.jQuery && window.jQuery.fn.jquery === '1.10.2'));
+        if (window.CryptoJS && window.JYPlayer && window.jQuery && window.jQuery.fn.jquery === '1.10.2') {
+            callback((window.CryptoJS && window.JYPlayer && window.jQuery && window.jQuery.fn.jquery === '1.10.2'));
         } else {
             window.setTimeout(function () {
                 checkReady(callback);
@@ -92,7 +104,7 @@
             //head.appendChild(link);
         }
         //Load Ooyala Script
-        $j.getScript("http://player.ooyala.com/v3/8429b6a60f6e42c493657dd629122e66?namespace=JYPlayer");
+        //$j.getScript("http://player.ooyala.com/v3/8429b6a60f6e42c493657dd629122e66?namespace=JYPlayer");
 
         //Start loading content at the location of the supplied script tag.
         var btc_div = $d.createElement('div');
@@ -102,7 +114,7 @@
         btc.parentNode.insertBefore(btc_div, btc);
 
         //Load the HTML
-        $j('#widget-home-btc').append('<div id="blurb">Daily 10 Seconds with Dana Carvey</div>');
+        $j('#widget-home-btc').append('<div id="blurb"><a href="#blurb">Daily 10 Seconds with Dana Carvey</a></div>');
         $j('#widget-home-btc').append('<div class="btc-widget-left"></div>');
         $j('.btc-widget-left').append('<div class="widget-btc-' + WIDGET_SIZE + '"></div>');
         //menu
@@ -111,6 +123,10 @@
         //$j('.widget-btc-' + WIDGET_SIZE + '').append('<div class="suspensor-btc" ></div>');
         //$j('.suspensor-btc').append('<div><img src="' + BASE_HREF + '/img/PineBros' + WIDGET_SIZE + '.png"></img></div>');
         $j('.widget-btc-' + WIDGET_SIZE + '').append('<div class="openB-btc"></div>');
+        if (OPEN_VAL) {
+            $j(".openB-btc").css(OPEN_VAL, "0");
+        }
+        //console.log($j(".openB-btc"));
         $j('.widget-btc-' + WIDGET_SIZE + '').append('<div class="playbtn-btc-' + WIDGET_SIZE + '"></div>');
         //float left
         $j('.openB-btc').append('<div class="divL-btc"></div>');
@@ -143,18 +159,50 @@
             };
             videoplayerJY = JYPlayer.Player.create('ooyalaplayer-btc', '', playerConfiguration);
             videoplayerJY.subscribe('played', 'myPage', function (eventName) {
-                $j('.openB-btc').toggle("slow");
-                $j('.complexListingBox').css('overflow', 'hidden');
-                $j('.suspensorB-btc').html('');
-                videoplayerJY.destroy();
+				if(getUrlParameter('tji') !== 'undefined'){
+					//do nothing
+            	}else{
+					$j('.openB-btc').toggle("slow");
+					$j('.complexListingBox').css('overflow', 'hidden');
+					$j('.suspensorB-btc').html('');
+					videoplayerJY.destroy();
+                }
             });
         });
 
         $j("#widget-close-btc").click(function () {
-            $j('.openB-btc').toggle("slow");
-            $j('.complexListingBox').css('overflow', 'hidden');
-            $j('.suspensorB-btc').html('');
-            videoplayerJY.destroy();
+        	if(getUrlParameter('tji') !== 'undefined'){
+				//do nothing
+            }else{
+				$j('.openB-btc').toggle("slow");
+				$j('.complexListingBox').css('overflow', 'hidden');
+				$j('.suspensorB-btc').html('');
+				videoplayerJY.destroy();
+            }
+        });
+
+        $j(document).ready(function () {
+			if(getUrlParameter('tji') != 'undefined'){
+				console.log("BTC Log: Special for marketing");
+				$j('#blurb').find('a')[0].click();
+				//$j('#widget-header-btc')[0].click();
+				
+				$j('.complexListingBox').css('overflow', 'visible');
+				$j('.openB-btc').css('display','block');
+				//$j('.openB-btc').toggle("slow");
+
+				var playerConfiguration = {
+					playlistsPlugin: {
+						"data": ["126f89d134914e75bebf965c8472425c"]
+					},
+					autoplay: true,
+					loop: false,
+					height: 420,
+					width: 472,
+					useFirstVideoFromPlaylist: true
+				};
+				videoplayerJY = JYPlayer.Player.create('ooyalaplayer-btc', '', playerConfiguration);
+            }
         });
 
         //Helper methods
@@ -177,14 +225,12 @@
             params.expires = expires;
 
             params = sortObjectByKey(params);
-            console.log(params);
 
             var stringToSign = secret + method + MEDIA_PATH_BASE + path;
             var key;
             for (key in params) {
                 stringToSign += key + '=' + params[key];
             }
-            console.log("stringtosign: " + stringToSign);
 
             var hash = CryptoJS.SHA256(stringToSign);
             var hashBase64 = CryptoJS.enc.Base64.stringify(hash);
@@ -204,7 +250,8 @@
         //Get widget playlist
         m_path = 'labels/a5c5155ef4d24828bf84f9e9b515d8dd/assets';
         m_params = {};
-        genurlandwrite('GET', m_path, m_params, 'getWidgetFeed');
+        //genurlandwrite('GET', m_path, m_params, 'getWidgetFeed');
+        constructWidget('Daily 10 Seconds with Dana Carvey', 'http://cf.c.ooyala.com/g4cXl5bjoEKtIjw1jcTvIo6lD3bMw0vS/promo230372342');
 
         function getWidgetFeed(url) {
             $j.ajax({
@@ -213,6 +260,7 @@
                 success: function (xml) {
                     console.log("BTC Log: Retrieved feed");
                     xml = JSON.parse(xml);
+                    alert(xml.items[0].preview_image_url);
                     constructWidget(xml);
                 },
                 error: function (xml) {
@@ -222,15 +270,39 @@
             });
         }
 
-        function constructWidget(xml) {
+        /*function constructWidget(xml) {
             console.log("BTC Log: Constructing video");
             console.log("BTC Log: " + xml.items[0].asset_type);
             console.log("BTC Log: Title " + xml.items[0].name);
             console.log("BTC Log: Embed " + xml.items[0].embed_code);
+            alert(xml.items[0].preview_image_url);
             jQueryitem = xml;
             $j('#widget-header-btc').html("<div class='widget-preview-btc-'" + WIDGET_SIZE + "><img class='widget-preview-btc-img-" + WIDGET_SIZE + "' src='" + xml.items[0].preview_image_url + "'></div>");
             $j('#widget-title-btc').html("" + xml.items[0].name + "");
             $j('#widget-title-in-btc').html("" + xml.items[0].name + "");
+        }*/
+        function constructWidget(name, imgurl) {
+            console.log("BTC Log: Constructing video");
+            
+            console.log("BTC Log: Title " + name);
+            console.log("BTC Log: Embed " + imgurl);
+            $j('#widget-header-btc').html("<div class='widget-preview-btc-'" + WIDGET_SIZE + "><img class='widget-preview-btc-img-" + WIDGET_SIZE + "' src='" + imgurl + "'></div>");
+            $j('#widget-title-btc').html("" + name + "");
+            $j('#widget-title-in-btc').html("" + name + "");
         }
+    	function getUrlParameter(sParam)
+		{
+			var sPageURL = window.location.search.substring(1);
+			var sURLVariables = sPageURL.split('&');
+			for (var i = 0; i < sURLVariables.length; i++) 
+			{
+				var sParameterName = sURLVariables[i].split('=');
+				if (sParameterName[0] == sParam) 
+				{
+					return sParameterName[1];
+				}
+			}
+			return 'undefined';
+		}  
     });
 })();
