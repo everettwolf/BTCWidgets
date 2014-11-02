@@ -1,31 +1,30 @@
 (function () {
     //Constants
-    var BASE_HREF = 'http://' + document.getElementById("BTCGridWidget").getAttribute("data-env");
+    var SCRIPT_ID = 'BTCGridWidget';
+    var BASE_HREF = 'http://' + document.getElementById(SCRIPT_ID).getAttribute("data-env");
+    var GRID_PL = document.getElementById(SCRIPT_ID).getAttribute("data-pl");
     var TITLE = 'New! Cartoon Shorts';
-    //Load Scripts
+    
+    if(!GRID_PL) GRID_PL = '5e543a8d321c414a9743a3103c209d1f';
+     //Load Scripts
     var script;
+    
     // Load jQuery
-    script = document.createElement("SCRIPT");
+    script = document.createElement('SCRIPT');
     script.src = 'http://code.jquery.com/jquery-1.10.2.js';
     script.type = 'text/javascript';
     document.getElementsByTagName("head")[0].appendChild(script);
-
-    //load CryptoJS
-    script = document.createElement("SCRIPT");
-    script.src = BASE_HREF + '/js/CryptoJS.js';
-    script.type = 'application/javascript';
+ 
+    //Load JYPlayer
+    script = document.createElement('SCRIPT');
+    script.src = 'http://player.ooyala.com/v3/3a7ee37efcb84a67912ff58f75f2600d?namespace=JYPlayer';
+    script.type = 'text/javascript';
     document.getElementsByTagName("head")[0].appendChild(script);
 
-	//load JYPlayer
-    script = document.createElement("SCRIPT");
-    script.src = '//player.ooyala.com/v3/8429b6a60f6e42c493657dd629122e66?namespace=JYPlayer';
-    script.type = 'application/javascript';
-    document.getElementsByTagName("head")[0].appendChild(script);
-
-    // Poll for jQuery and CryptoJS to come into existance
+    // Poll for jQuery and CryptoJS to come into existence
     var checkReady = function (callback) {
-        if (window.CryptoJS && window.JYPlayer && window.jQuery && window.jQuery.fn.jquery === '1.10.2') {
-            callback((window.CryptoJS && window.JYPlayer && window.jQuery && window.jQuery.fn.jquery === '1.10.2'));
+        if (window.jQuery && window.jQuery.fn.jquery === '1.10.2' && window.JYPlayer) {
+            callback(window.jQuery && window.jQuery.fn.jquery === '1.10.2' && window.JYPlayer);
         } else {
             window.setTimeout(function () {
                 checkReady(callback);
@@ -40,23 +39,37 @@
         var $d = document;
         console.log("BTC Log: You are running jQuery version: " + $j.fn.jquery);
         
-        //Analytics
-        (function (i, s, o, g, r, a, m) {
-            i.GoogleAnalyticsObject = r;
-            i[r] = i[r] || function () {
-                (i[r].q = i[r].q || []).push(arguments);
-            }, i[r].l = 1 * new Date();
-            a = s.createElement(o),
-            m = s.getElementsByTagName(o)[0];
-            a.async = 1;
-            a.src = g;
-            m.parentNode.insertBefore(a, m);
-        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+        if(!BASE_HREF || !GRID_PL){
+			var $j = jQuery.noConflict();
+			var $d = document;
+		
+			var h = 'Missing attributes in widget code.<br>';
+			h += 'Usage:  script id=\'BTCGridWidget\' data-env=\'[environment]\' data-pl=\'[gridkey]\' src=\'[source]\'<br>';
+			h += '<b>Please request an updated widget string to embed with the proper attributes.</b>';
+			var btc_div = $d.createElement('div');
+			btc_div.id = 'btc-grid-widget';
 
-        ga('create', 'UA-50041591-1', 'auto');
-        ga('send', 'pageview');
-        ga('set', '&uid', "BTCGridWidget");
+			var grid = $d.getElementById(SCRIPT_ID);
+			grid.parentNode.insertBefore(btc_div, grid);
+			$j("#btc-grid-widget").html(h);
+    		return;
+    	}
+		//Analytics
+		(function (i, s, o, g, r, a, m) {
+			i.GoogleAnalyticsObject = r;
+			i[r] = i[r] || function () {
+				(i[r].q = i[r].q || []).push(arguments);
+			}, i[r].l = 1 * new Date();
+			a = s.createElement(o),
+			m = s.getElementsByTagName(o)[0];
+			a.async = 1;
+			a.src = g;
+			m.parentNode.insertBefore(a, m);
+		})(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
 
+		ga('create', 'UA-50041591-1', 'auto');
+			
+        //Load Stylesheets
         var cssId;
         var head;
         var link;
@@ -82,22 +95,27 @@
             link.media = 'all';
             head.appendChild(link);
         }
-        /* //Call HTML page
-        var url = BASE_HREF + "/BTCGrid.php";
-        $j.ajax({
-            url: url,
-            dataType: "html",
-            success: function (h) {
-                var btc_div = $d.createElement('div');
-                btc_div.id = 'btc-grid-widget';
-
-                var grid = $d.getElementById('BTCGridWidget');
-                grid.parentNode.insertBefore(btc_div, grid);
-
-                $j("#btc-grid-widget").html(h);
-            }
-        });*/
-        var h = '<div id="main-container" class="home">';
+        
+        //see if the source is Marketing, Facebook or Twitter
+        var pl = "";
+        var src = "";
+        var param = "";
+        if(getUrlParameter('UTM') !== "undefined") {
+        	pl = getUrlParameter('UTM');
+        	src = 'jg';
+        	param = 'UTM';
+        }else if(getUrlParameter('FB') !== "undefined"){
+        	pl = getUrlParameter('FB');
+        	src = 'fb';
+        	param = 'FB';
+        }else if(getUrlParameter('TTR') !== "undefined"){
+        	pl = getUrlParameter('TTR');
+        	src = 'ttr';
+        	param = 'TTR'
+        }
+        
+        //Load intitial HTML
+        var h = '<div id="main-container" class="home"><a href="#edge-top"></a>';
         h += '<div id="edge-top"></div>';
         h += '<div id="film-strip">';
         h += '<div class="dot dot-top"></div>';
@@ -119,6 +137,8 @@
         h += '<span class="title"><span id="tier-1_title_0"></span></span>';
         h += '<br>';
         h += '<span class="voice"><span id="tier-1_voice_0"></span></span>';
+        h += '<br>';
+        h += '<span id="tier-1_playlist_0" style="display:none;font-family:arial;" class="playlist"></span>';
         h += '</div>';
         h += '</a>';
         h += '<a href="#edge-top" class="vid-item"><span id="tier-1_img_1"><img width="312" height="185" src="' + BASE_HREF + '/img/trans.png" /></span>';
@@ -126,6 +146,8 @@
         h += '<span class="title"><span id="tier-1_title_1"></span></span>';
         h += '<br>';
         h += '<span class="voice"><span id="tier-1_voice_1"></span></span>';
+        h += '<br>';
+        h += '<span id="tier-1_playlist_1" style="display:none;font-family:arial;" class="playlist"></span>';
         h += '</div>';
         h += '</a>';
         h += '</div>';
@@ -136,6 +158,8 @@
         h += '<span class="title"><span id="tier-2_title_0"></span></span>';
         h += '<br>';
         h += '<span class="voice"><span id="tier-2_voice_0"></span></span>';
+        h += '<br>';
+        h += '<span id="tier-2_playlist_0" style="display:none;font-family:arial;" class="playlist"></span>';
         h += '</div>';
         h += '</a>';
         h += '<div class="ad-unit-small">';
@@ -146,6 +170,8 @@
         h += '<span class="title"><span id="tier-2_title_1"></span></span>';
         h += '<br>';
         h += '<span class="voice"><span id="tier-2_voice_1"></span></span>';
+        h += '<br>';
+        h += '<span id="tier-2_playlist_1" style="display:none;font-family:arial;" class="playlist"></span>';
         h += '</div>';
         h += '</a>';
         h += '</div>';
@@ -155,6 +181,8 @@
         h += '<span class="title"><span id="tier-2_title_2"></span></span>';
         h += '<br>';
         h += '<span class="voice"><span id="tier-2_voice_2"></span></span>';
+        h += '<br>';
+        h += '<span id="tier-2_playlist_2" style="display:none;font-family:arial;" class="playlist"></span>';
         h += '</div>';
         h += '</a>';
         h += '<a href="#edge-top" class="vid-item">';
@@ -163,6 +191,8 @@
         h += '<span class="title" style=""><span id="tier-2_title_3"></span></span>';
         h += '<br>';
         h += '<span class="voice"><span id="tier-2_voice_3"></span></span>';
+        h += '<br>';
+        h += '<span id="tier-2_playlist_3" style="display:none;font-family:arial;" class="playlist"></span>';
         h += '</div>';
         h += '</a>';
         h += '<a href="#edge-top" class="vid-item">';
@@ -171,6 +201,8 @@
         h += '<span class="title"><span id="tier-2_title_4"></span></span>';
         h += '<br>';
         h += '<span class="voice"><span id="tier-2_voice_4"></span></span>';
+        h += '<br>';
+        h += '<span id="tier-2_playlist_4" style="display:none;font-family:arial;" class="playlist"></span>';
         h += '</div>';
         h += '</a>';
         h += '<a href="#edge-top" class="vid-item">';
@@ -179,6 +211,8 @@
         h += '<span class="title"><span id="tier-2_title_5"></span></span>';
         h += '<br>	';
         h += '<span class="voice"><span id="tier-2_voice_5"></span></span>';
+        h += '<br>';
+        h += '<span id="tier-2_playlist_5" style="display:none;font-family:arial;" class="playlist"></span>';
         h += '</div>';
         h += '</a>';
         h += '<a href="#edge-top" class="vid-item">';
@@ -187,6 +221,8 @@
         h += '<span class="title"><span id="tier-2_title_6"></span></span>';
         h += '<br>	';
         h += '<span class="voice"><span id="tier-2_voice_6"></span></span>';
+        h += '<br>';
+        h += '<span id="tier-2_playlist_6" style="display:none;font-family:arial;" class="playlist"></span>';
         h += '</div>';
         h += '</a>';
         h += '<a href="#edge-top" class="vid-item">';
@@ -195,13 +231,19 @@
         h += '<span class="title"><span id="tier-2_title_7"></span></span>';
         h += '<br>';
         h += '<span class="voice"><span id="tier-2_voice_7"></span></span>';
+        h += '<br>';
+        h += '<span id="tier-2_playlist_7" style="display:none;font-family:arial;" class="playlist"></span>';
         h += '</div>';
         h += '</a>';
         h += '</div>';
         h += '</div>';
         h += '<div id="tier-player">';
         h += '<div id="playerContainer"></div>';
-        h += '<div id="playerContainerBottom"><a href="#edge-top" class="moreComicsButton"></a></div>';
+        h += '<div id="playerContainerBottom"><a href="#edge-top" class="moreComicsButton"></a>';
+        if(pl!==""){
+        	h += '<div id="playerad"><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><ins class="adsbygoogle" style="display:inline-block;width:336px;height:280px" data-ad-client="ca-pub-5403475582289341" data-ad-slot="8968436119"></ins><script>(adsbygoogle = window.adsbygoogle || []).push({});</script></div>';
+        }
+        h += '</div>';
         h += '</div>';
         h += '</div>';
         h += '</div>';
@@ -212,216 +254,165 @@
         h += '<div class="footer-links"><a href="' + BASE_HREF + '/about.php">About B.T.C.</a>';
         h += '<a href="' + BASE_HREF + '/contact.php" class="last">Contact Us</a>';
         h += '</div>';
-
         h += '</div>';
         h += '<div class="copyright">copyright &copy; 2014 Beyond the Comics</div>';
         h += '</div>';
         h += '<div id="edge-bottom"></div>';
-
         var btc_div = $d.createElement('div');
         btc_div.id = 'btc-grid-widget';
 
-        var grid = $d.getElementById('BTCGridWidget');
+        var grid = $d.getElementById(SCRIPT_ID);
         grid.parentNode.insertBefore(btc_div, grid);
         $j("#btc-grid-widget").html(h);
         console.log("BTC Log: Loaded default HTML");
 
-        //Get the ooyala script for the player
-        //$j.getScript("http://player.ooyala.com/v3/8429b6a60f6e42c493657dd629122e66?namespace=JYPlayer");
-        //Global playlists object.  We have to get playlists separately from assets
-        //and then crossreference the two until Oolala provides a querystring scheme to cross the two
-        var playlists = {};
+        getAssetInfo();
 
-        //Credentials for Ooyala
-        var api_key = "VmZ3kxOkk4Bm_RPLvXTM3ckfuX_m.JE2G1";
-        var secret = "hiPYJoqLqe9Fkwx0Cg5AS04YhGN8T3fdBw0jLk1n";
-        var expires = Math.round((new Date().getTime('1/1/1970') / 1000)) + (24 * 60);
-
-        //Featured video ids
-        var feat_vids = "05f9ae450a8145cab498ff2402c8275b";
-        //Other grid videos id
-        var grid_vids = "1eaa81bc75694f46898e25a65e2923b8";
-
-
-        var pl_stringToSign = secret + 'GET' + '/v2/playlistsapi_key=' + api_key + 'expires=' + expires;
-        var fv_stringToSign = secret + 'GET' + '/v2/labels/' + feat_vids + '/assetsapi_key=' + api_key + 'expires=' + expires + 'include=metadata';
-        var nfv_stringToSign = secret + 'GET' + '/v2/labels/' + grid_vids + '/assetsapi_key=' + api_key + 'expires=' + expires + 'include=metadata';
-        var pl_hash = CryptoJS.SHA256(pl_stringToSign);
-        var fv_hash = CryptoJS.SHA256(fv_stringToSign);
-        var nfv_hash = CryptoJS.SHA256(nfv_stringToSign);
-
-        var pl_hashBase64 = CryptoJS.enc.Base64.stringify(pl_hash);
-        var fv_hashBase64 = CryptoJS.enc.Base64.stringify(fv_hash);
-        var nfv_hashBase64 = CryptoJS.enc.Base64.stringify(nfv_hash);
-        pl_signature = encodeURIComponent(pl_hashBase64.substring(0, 43).replace(/=+$/, ''));
-        fv_signature = encodeURIComponent(fv_hashBase64.substring(0, 43).replace(/=+$/, ''));
-        nfv_signature = encodeURIComponent(nfv_hashBase64.substring(0, 43).replace(/=+$/, ''));
-        getPlaylists(pl_signature);
-        getVideos(fv_signature, feat_vids, 'tier-1');
-        getVideos(nfv_signature, grid_vids, 'tier-2');
-
-
-        function getPlaylists(signature) {
-            var url = "";
-            //Call Ooyala to retrieve playlists
-            console.log("BTC Log: Getting playlists");
-            url = 'http://api.ooyala.com/v2/playlists?api_key=' + api_key + '&signature=' + signature + '&expires=' + expires;
-
+        function getAssetInfo() {
+            var AssetInfo = {};
+            console.log("BTC Log: Getting Asset Info");
+            var url = BASE_HREF + '/php/BTC_Grid.php?pl=' + GRID_PL;
+            console.log(url);
+            //return;
             $j.ajax({
                 url: url,
-                dataType: 'text',
+                dataType: 'json',
+                cross_domain: true,
                 success: function (xml) {
-                    console.log("BTC Log: Retrieved feed for playlists");
-                    xml = JSON.parse(xml);
-                    $j.each(xml.items, function (key, data) {
-                        if (data.name.substring(0, 2) === 'MT') {
-                            playlists[data.name.toLowerCase()] = data.id;
-                        }
-                    });
+                    console.log("BTC Log: Retrieved feed for asset info");
+                    writeDivs(xml);
                 },
                 error: function (xml) {
-                    console.log("BTC Log: Can't connect to video server to retrieve playlists");
-                    //alert("can't connect to video server to retrieve playlists");
-                }
-            });
-        }
-        //Call Ooyala to retrieve featured videos
-        function getVideos(signature, key, tier) {
-            var url = 'http://api.ooyala.com/v2/labels/' + key + '/assets?include=metadata&api_key=' + api_key + '&signature=' + signature + '&expires=' + expires;
-            $j.ajax({
-                url: url,
-                dataType: 'text',
-                success: function (xml) {
-                    console.log("BTC Log: Retrieved feed for " + tier + " featured Videos");
-                    xml = JSON.parse(xml);
-                    //console.log("need to replicate: " + JSON.stringify(xml));
-                    writeDiv(xml, tier);
-                },
-                error: function (xml) {
-                    console.log("BTC Log: Can't connect to video server to retrieve " + tier + " videos");
-                    //alert("can't connect to video server");
+                    console.log("BTC Log: Can't connect to video server to retrieve asset info");
                 }
             });
         }
 
-
-         function writeDiv(xml, id) {
-            //console.log(JSON.stringify(xml));
-            if(getUrlParameter('cl') =='true' || getUrlParameter('nts') == 'true' || getUrlParameter('dt') == 'true'
-            || getUrlParameter('tmts') =='true' || getUrlParameter('ww') =='true' || getUrlParameter('ht') =='true' 
-            || getUrlParameter('cic') =='true' || getUrlParameter('dar') =='true' || getUrlParameter('sc') =='true' 
-            || getUrlParameter('dip') =='true' || getUrlParameter('ih') =='true' || getUrlParameter('ppc') =='true'
-            || getUrlParameter('tjig') =='true'|| getUrlParameter('lfk') =='true'){
-                console.log('BTC Log: Hiding Grid for direct video play');
-				$j('#tier-1').hide();
-				$j('#tier-2').hide();
-				$j('#tier-3').hide();
-				$j('#tier-4').show();
-			}
+        function writeDivs(assetinfo) {
+        	//If a specific playlist is passed via querystring, catch it and assign it
+        	//to these variables to force a play on it.
+        	var pv_playlistid = pl;
+        	var pv = false;
+        	var pv_comic = "";
+        	var pv_title = "";
+        	var pv_talent = "";
+        	
+            var id = "";
+            var i = 0;
+            var cnt = 0;
             $j('#pagetitle h3').html(TITLE);
-            $j.each(xml.items, function (i, item) {
+            $j.each(assetinfo, function (key, val) {
+            	if(pv_playlistid === val.playlist_id){
+            		pv = true;
+            		pv_comic = val.comic;
+            		pv_talent = val.talent;
+            	}
+                id = cnt < 2 ? 'tier-1' : 'tier-2';
+                i = cnt < 2 ? cnt : cnt - 2;
+                cnt++;
                 var imgid = "#" + id + "_img_" + i;
                 var titleid = "#" + id + "_title_" + i;
                 var voiceid = "#" + id + "_voice_" + i;
-                $j(imgid).html("<img src=\"" + item.preview_image_url + "\">").data({
-                    name: item.name,
-                    voice: item.metadata.voice,
-                    embed_code: item.embed_code
+                var playlistid = "#" + id + "_playlist_" + i;
+                //console.log("EC:" + val.embed_code);
+                $j(imgid).html("<img src=\"" + val.thumb + "\">").data({
+                    comic: val.comic,
+                    title: val.title,
+                    talent: val.talent,
+                    playlist_id: val.playlist_id
                 });
 
                 $j(imgid).click(function () {
-                    playVideo($j.data(this).name, $j.data(this).voice, $j.data(this).embed_code);
+                    playVideo($j.data(this).comic,$j.data(this).title, $j.data(this).talent, $j.data(this).playlist_id);
                 });
-                $j(titleid).html(item.name);
-                $j(voiceid).html(item.metadata.voice);
+                $j(playlistid).click(function () {
+                    alert(val.playlist_id);
+                });
+                $j(titleid).html(val.comic);
+                $j(voiceid).html(val.talent);
+                $j(playlistid).html(val.playlist_id);
             });
-            if(getUrlParameter('cl') == 'true'){
-            	console.log('BTC Log: diverting to Church Lady');
-                playVideo('Church Lady', 'Dana Carvey', '78e61e85e7e24006a530a7e9ecae1138');
-			}
-			if(getUrlParameter('nts') == 'true'){
-            	console.log('BTC Log: diverting to Note To Self');
-                playVideo('Note to Self', 'Julianne Moore', '3c6959a4501048ec89e5cb6e8bdc1077');
-			}
-			if(getUrlParameter('dt') == 'true'){
-            	console.log('BTC Log: diverting to Deep Thoughts');
-                playVideo('Deep Thoughts', 'Jack Handey', '2a6cf260e9974037aa07da50b6c19d95');
-			}
-            if(getUrlParameter('tmts') == 'true'){
-            	console.log('BTC Log: diverting to 2 Minute Talk Show');
-                playVideo('2 Minute Talk Show', 'Dana Carvey', 'd9e4490dd2d49bd99f396eba77d691e');
-			}
-            if(getUrlParameter('ww') == 'true'){
-            	console.log('BTC Log: diverting to Wonder Why Your Relationship Ended?');
-                playVideo('Wonder Why Your Relationship Ended?', 'David Spade', '335f8d10ef854716869baf5d7eebf278');
-			}
-            if(getUrlParameter('ht') == 'true'){
-            	console.log('BTC Log: diverting to Hypochondriac Thoughts for the Day');
-                playVideo('Hypochondriac Thoughts for the Day', 'Kevin Nealon', 'b65ba58e527440c2af8a76f5802d3e89');
-			}
-            if(getUrlParameter('cic') == 'true'){
-            	console.log('BTC Log: diverting to Cursing Into A Cellphone');
-                playVideo('Cursing Into A Cellphone', 'Ana Faris', '3a1e66d904f7474b838ab535814b8900');
-			}
-            if(getUrlParameter('dar') == 'true'){
-            	console.log('BTC Log: diverting to Dude and Rockstar');
-                playVideo('Dude and Rockstar', 'David Spade and Colin Quinn', '1d147af5985a49a4b103f0ebca9d1147');
-			}
-            if(getUrlParameter('sc') == 'true'){
-            	console.log('BTC Log: diverting to Sketchy Coffee');
-                playVideo('Sketchy Coffee', 'Sarah Silverman', 'd68814b9b148430cb677ae0290f229af');
-			}
-            if(getUrlParameter('dip') == 'true'){
-            	console.log('BTC Log: diverting to Dog In Purse');
-                playVideo('Dog In Purse', 'David Spade', 'cca9d0ef42e043eea2f20ee880ed8806');
-			}
-            if(getUrlParameter('ih') == 'true'){
-            	console.log('BTC Log: diverting to I, Hippie');
-                playVideo('I, Hippie', 'Dana Carvey', '3c49534a6462437883a9d029ed5cffcd');
-			}
-            if(getUrlParameter('ppc') == 'true'){
-            	console.log('BTC Log: diverting to Presidential Phone Calls');
-                playVideo('Presidential Phone Calls', 'Dana Carvey', '6a655b58bc8349d69df33ef644f9f4d5');
-			}
-			if(getUrlParameter('tjig') == 'true'){
-            	console.log('BTC Log: diverting to Daily 10 Seconds with Dana Carvey');
-                playVideo('Daily 10 Seconds with Dana Carvey', 'Dana Carvey', '60b2225e790046d6ad7eef04b59a2432');
-			}
-			if(getUrlParameter('lfk') == 'true'){
-            	console.log('BTC Log: diverting to Letters From Kids');
-                playVideo('Letters From Kids', 'Sara Wolf', '87ef677dfc0844d1b44961ac58a405ae');
-			}
-			
+
+			var location = window.location.pathname;
+            if (pv) playVideo(pv_comic, pv_title, pv_talent, pv_playlistid);
+            else ga('send','pageview',location);
         }
 
-        /*function writeArchiveList(xml) {
-            $j.each(xml.items, function (i, item) {
-                var archid = "#archid_" + i;
-                var footarchid = "#footarchid_" + i;
-                if (item.parent_id == archive_id) {
-                    console.log("ARCHIE: " + item.name + ", " + item.id);
-                    $j("#archive-list").append("<li id=\"archid_" + i + "\"></li>");
-                    $j("#footer-archive-list").append("<li id=\"footarchid_" + i + "\"></li>");
-                    $j(archid).html("<a href=\"#\">" + item.name + "</a>").data({
-                        name: item.name,
-                        id: item.id
-                    });
-                    $j(footarchid).html("<a href=\"#\">" + item.name + "</a>").data({
-                        name: item.name,
-                        id: item.id
-                    });
-                    $j(archid).click(function () {
-                        console.log($j.data(this).name);
-                        playVideo($j.data(this).name, $j.data(this).id);
-                    });
-                    $j(footarchid).click(function () {
-                        console.log($j.data(this).name);
-                        playVideo($j.data(this).name, $j.data(this).id);
-                    });
+
+
+        function playVideo(comic, title, talent, playlist_id) {
+            /*$j(document).ready(function () {
+                setTimeout(function () {
+                    $j('.oo-thumbnail-caption').css('font-size', 14).show();
+                    $j('div.oo-playlists-thumbnails').prepend('<h5>More ' + comic + '</h5>');
+                }, 2000);
+            });*/
+            var pv_playlistid = pl;
+            var pv_hash = pv_playlistid===playlist_id?"#" + src + "_" + getInits(comic):"";
+            var location = window.location.pathname + pv_hash;
+            ga('send','pageview', location);
+			ga('send', 'event', src + 'gridplaylist', 'opened', comic);
+			if(pv_hash!=="") clickit($j('#main-container').find('a')[0]);
+            $j('#tier-1').hide();
+            $j('#tier-2').hide();
+            $j('#tier-3').hide();
+            $j('#tier-4').show();
+            $j('#playerContainerBottom').show();
+            $j('#pagetitle h3').html('');
+            $j('#pagetitle h1').html(comic);
+            $j('#pagetitle h2').html('with ' + talent);
+            
+            var playerConfig = {
+                playlistsPlugin: {
+                    "data": [playlist_id]
+                },
+                autoplay: true,
+                loop: false,
+                height: 500,
+                width: 618,
+                useFirstVideoFromPlaylist: true
+            };
+            videoplayerJY = JYPlayer.Player.create('playerContainer', '', playerConfig);
+            var playings = 0;
+            var playeds = 0;
+            var playingtitle = "";
+            videoplayerJY.subscribe('playing', 'video', function (eventName) {
+            	if(videoplayerJY.getDescription() != playingtitle) {
+					playings++;
+					playingtitle = videoplayerJY.getDescription();
+					var evt_title = comic + ' : #' + playings + ' (' + playingtitle + ')';
+					ga('send','event',src + 'gridplaylist','playstarted', evt_title);
+            	}
+            });
+            videoplayerJY.subscribe('played', 'video', function (eventName) {
+            	playeds++;
+            	var evt_title = comic + ' : #' + playeds + ' (' + playingtitle + ')';
+            	ga('send','event',src + 'gridplaylist','played', evt_title);
+            });
+            videoplayerJY.subscribe('error', 'video', function(eventName, payload) { 
+            	ga('send','event',src + 'gridplayerror',eventName + ': ' + payload);
+            }); 
+
+            $j('.moreComicsButton').click(function () {
+                var location = window.location.pathname;
+            	ga('send','pageview',location);
+            	ga('send','event',src + 'homebutton','clicked','Back to Grid');
+                $j('#tier-1').show();
+                $j('#tier-2').show();
+                $j('#tier-3').show();
+                $j('#tier-4').hide();
+                $j('#playerContainerBottom').hide();
+                $j('#pagetitle h3').html(TITLE);
+                $j('#pagetitle h1').html('');
+                $j('#pagetitle h2').html('');
+                if (videoplayerJY) {
+                    console.log("BTC Log: Destroying video player");
+                    videoplayerJY.destroy();
+
                 }
             });
-        }*/
-		function getUrlParameter(sParam)
+        }
+        function getUrlParameter(sParam)
 		{
 			var sPageURL = window.location.search.substring(1);
 			var sURLVariables = sPageURL.split('&');
@@ -435,80 +426,26 @@
 			}
 			return 'undefined';
 		}  
-        function playVideo(name, voice, embed_code) {
-            //In order to embed a playlist, the name of the comic needs to have a matching name with
-            //a playlist, until Oolala provides an interface to intersect the two.
-            //In the meantime, the publisher will need to ensure that there is a one-to-one
-            //relationship between the two.  If there's a playlist, then a video playlist
-            //will be embedded.  If not, only a single comic will be available.
-            $j(document).ready(function () {
-                setTimeout(function () {
-                    //$j('.oo-thumbnail-caption').css('font-size', 14).show();
-                    //$j('div.oo-playlists-thumbnails').prepend('<h5>More ' + name + '</h5>');
-                }, 2000);
-            });
-
-            $j('#tier-1').hide();
-            $j('#tier-2').hide();
-            $j('#tier-3').hide();
-            $j('#tier-4').show();
-            $j('#pagetitle h3').html('');
-            $j('#pagetitle h1').html(name);
-            $j('#pagetitle h2').html('with ' + voice);
-            var playlist;
-            if(embed_code == '78e61e85e7e24006a530a7e9ecae1138' || embed_code == '3c6959a4501048ec89e5cb6e8bdc1077' 
-            || embed_code == '2a6cf260e9974037aa07da50b6c19d95' || embed_code == 'd9e4490dd2d49bd99f396eba77d691e'
-            || embed_code == '335f8d10ef854716869baf5d7eebf278' || embed_code == 'b65ba58e527440c2af8a76f5802d3e89'
-            || embed_code == '3a1e66d904f7474b838ab535814b8900' || embed_code == '1d147af5985a49a4b103f0ebca9d1147'
-            || embed_code == 'd68814b9b148430cb677ae0290f229af' || embed_code == 'cca9d0ef42e043eea2f20ee880ed8806' 
-            || embed_code == '3c49534a6462437883a9d029ed5cffcd' || embed_code == '6a655b58bc8349d69df33ef644f9f4d5'
-            || embed_code == '60b2225e790046d6ad7eef04b59a2432' || embed_code == '87ef677dfc0844d1b44961ac58a405ae'){
-            	console.log('BTC Log: guaranteeing CL or NTS Playlist');
-               playlist = embed_code;
-			}else{
-				playlist = playlists['mt ' + name.toLowerCase()];
+		function getInits(s){
+			var re = /\b[A-Za-z]/g; 
+			var m;
+			var ret = "";
+			while ((m = re.exec(s)) != null) {
+				ret += m;
+				if (m.index === re.lastIndex) {
+					re.lastIndex++;
+				}
 			}
-            var playerConfig;
-            if (playlist) {
-                console.log("BTC Log: Got playlist");
-                playerConfig = {
-                    playlistsPlugin: {
-                        "data": [playlist]
-                    },
-                    autoplay: true,
-                    loop: false,
-                    height: 500,
-                    width: 618,
-                    useFirstVideoFromPlaylist: true
-                };
-                videoplayerJY = JYPlayer.Player.create('playerContainer', '', playerConfig);
+			return ret.toLowerCase();
+		}
+		function clickit(elem) {
+            if (!elem) {
+                window.setTimeout(function () {
+                    clickit(elem);
+                }, 100);
             } else {
-                console.log("BTC Log: Couldn't find playlist; playing individual video");
-                playerConfig = {
-                    autoplay: true,
-                    loop: false,
-                    height: 348,
-                    width: 618,
-                    useFirstVideoFromPlaylist: true
-                };
-                videoplayerJY = JYPlayer.Player.create('playerContainer', embed_code, playerConfig);
+                elem.click();
             }
-            $j('.oo-thumbnail-caption').css('font-size', 14).show();
-            $j('.oo-playlists-thumbnails').prepend('<h5>More ' + name + '</h5>');
-            $j('.moreComicsButton').click(function () {
-                $j('#tier-1').show();
-                $j('#tier-2').show();
-                $j('#tier-3').show();
-                $j('#tier-4').hide();
-                $j('#pagetitle h3').html(TITLE);
-                $j('#pagetitle h1').html('');
-                $j('#pagetitle h2').html('');
-                if (videoplayerJY) {
-                    console.log("BTC Log: Destroying video player");
-                    videoplayerJY.destroy();
-
-                }
-            });
         }
     });
 })();

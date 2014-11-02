@@ -299,6 +299,17 @@ header {
 	display:inline-block;
 	float:left;
 }
+#playerad{
+	padding-top: 10px;
+	background-color: #e4ce99;
+	width: 336px;
+	height 280px;
+	display:inline-block;
+	float: center;
+}
+#playerad ins{
+ background-color: #e4ce99;
+}
 
 h1, h2, h3, h4, h5 {
 	font-family: 'Permanent Marker', cursive;
@@ -923,12 +934,13 @@ footer {
     color: #333;
 }
 #playerContainerBottom  {
-display: block;
-padding: 15px; 0px; 0px; 0px;
-text-align: center;
+	display: block;
+	padding: 15px; 0px; 0px; 0px;
+	text-align: center;
+	display: none;
 }
 #playerContainerBottom a.moreComicsButton, a.moreComicsButton:hover {
-    background-image: url('../img/btcMoreComicsBtnBg.png');
+    background-image: url('/img/btcMoreComicsBtnBg.png');
     background-position: center top;
     background-repeat: no-repeat;
     display: block;

@@ -1,14 +1,33 @@
 (function () {
-	var pathname = window.location.pathname;
-	if(pathname === '/beyondcomics/' || pathname === '/895' || 1===1) {
-		return;
-	}
-    var BASE_HREF = 'http://' + document.getElementById("BTCHomeWidget").getAttribute("data-env");
-    var WIDGET_SIZE = document.getElementById("BTCHomeWidget").getAttribute("data-size");
-    var OPEN_VAL = document.getElementById("BTCHomeWidget").getAttribute("data-open");
+    var pathname = window.location.pathname;
+    if (pathname === '/beyondcomics/' || pathname === '/895' ) {
+        return;
+    }
+    if(window.location.hostname==='www.charlotteobserver.com' || window.location.hostname==='charlotteobserver.com'){
+    	console.log("BTC Log: Suppressing Widget");
+    	return;
+    }
+    var SCRIPT_ID = 'BTCHomeWidget';
+    var BASE_HREF = 'http://' + document.getElementById(SCRIPT_ID).getAttribute("data-env");
+    var WIDGET_WIDTH = document.getElementById(SCRIPT_ID).getAttribute("data-width");
+    var WIDGET_HEIGHT = document.getElementById(SCRIPT_ID).getAttribute("data-height");
+    var OPEN_VAL = document.getElementById(SCRIPT_ID).getAttribute("data-open");
+    var HOME_PL = document.getElementById(SCRIPT_ID).getAttribute("data-pl");
+    var GRID_URL = document.getElementById(SCRIPT_ID).getAttribute("data-grid");
+    var SHOW_ADS = document.getElementById(SCRIPT_ID).getAttribute("data-ads");
+
+    if(!SHOW_ADS) SHOW_ADS = "false";
+    SHOW_ADS = SHOW_ADS==="true"?true:false;
+
+    WIDGET_WIDTH = 300;
+    WIDGET_HEIGHT = 285;
+    if(!OPEN_VAL) OPEN_VAL = 'left';
+    if(!HOME_PL) HOME_PL = '1370fdbbe1ef4483b54a83354c37f922';
+    if(!GRID_URL) GRID_URL = '/beyondcomics/';
 
     console.log("BTC Log: Environment: " + BASE_HREF);
-    console.log("BTC Log: Widget size: " + WIDGET_SIZE);
+    console.log("BTC Log: Widget Width: " + WIDGET_WIDTH);
+    console.log("BTC Log: Widget Height: " + WIDGET_HEIGHT);
     console.log("BTC Log: Widget opens: " + OPEN_VAL);
     //Load Scripts
     var script;
@@ -18,34 +37,70 @@
     script.type = 'text/javascript';
     document.getElementsByTagName("head")[0].appendChild(script);
 
-    //load CryptoJS
-    script = document.createElement("SCRIPT");
-    script.src = BASE_HREF + '/js/CryptoJS.js';
-    script.type = 'application/javascript';
-    document.getElementsByTagName("head")[0].appendChild(script);
-    
     //load JYPlayer
     script = document.createElement("SCRIPT");
-    script.src = 'http://player.ooyala.com/v3/8429b6a60f6e42c493657dd629122e66?namespace=JYPlayer';
+	script.src = 'http://player.ooyala.com/v3/3a7ee37efcb84a67912ff58f75f2600d?namespace=JYPlayer';
+    
+    
+    
     script.type = 'application/javascript';
     document.getElementsByTagName("head")[0].appendChild(script);
 
-    // Poll for jQuery and CryptoJS to come into existance
+    // Poll for jQuery and CryptoJS to come into existence
     var checkReady = function (callback) {
-        if (window.CryptoJS && window.JYPlayer && window.jQuery && window.jQuery.fn.jquery === '1.10.2') {
-            callback((window.CryptoJS && window.JYPlayer && window.jQuery && window.jQuery.fn.jquery === '1.10.2'));
+        if (window.JYPlayer && window.jQuery && window.jQuery.fn.jquery === '1.10.2') {
+            callback(window.JYPlayer && window.jQuery && window.jQuery.fn.jquery === '1.10.2');
         } else {
             window.setTimeout(function () {
                 checkReady(callback);
             }, 100);
         }
     };
-
     // Start polling...
     checkReady(function ($) {
         var $j = jQuery.noConflict();
         console.log("BTC Log: jQuery loaded.  Running version " + $j.fn.jquery);
         var $d = document;
+        var btc_div;
+        var OO;
+        //see if the source is Marketing, Facebook or Twitter
+        var pl = "";
+        var src = "";
+        var param = "";
+        if(getUrlParameter('UTM') !== "undefined") {
+        	pl = getUrlParameter('UTM');
+        	src = 'jg';
+        	param = 'UTM';
+        }else if(getUrlParameter('FB') !== "undefined"){
+        	pl = getUrlParameter('FB');
+        	src = 'fb';
+        	param = 'FB';
+        }else if(getUrlParameter('TTR') !== "undefined"){
+        	pl = getUrlParameter('TTR');
+        	src = 'ttr';
+        	param = 'TTR'
+        }
+        //to determine if a tutorial should be shown
+        var t = getUrlParameter('t');
+        //number of seconds to delay before an open/redirect
+        var s = getUrlParameter('s');
+
+        var mktg = pl === '' ? false : true;
+        t = t === 'true' ? true : false;
+        s = s === 'undefined'?1000:s*1000;
+
+        if (!BASE_HREF || !WIDGET_WIDTH || !WIDGET_HEIGHT || !OPEN_VAL || !HOME_PL || !GRID_URL) {
+            var h = 'Missing attributes in widget code.<br>';
+            h += 'Usage:  script id=\'BTCHomeWidget\' data-env=\'[environment]\' data-open=\'[openval]\' data-width=\'[widgetwidth]\' data-height=\'[widgetheight]\'  data-pl=\'[videokey]\' data-grid=\'[gridurl]\' src=\'[source]\'<br>';
+            h += '<b>Please request an updated widget string to embed with the proper attributes.</b>';
+            btc_div = $d.createElement('div');
+            btc_div.id = 'btc-home-widget';
+
+            var grid = $d.getElementById(SCRIPT_ID);
+            grid.parentNode.insertBefore(btc_div, grid);
+            $j("#btc-home-widget").html(h);
+            return;
+        }
 
         //Analytics
         (function (i, s, o, g, r, a, m) {
@@ -61,27 +116,12 @@
         })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
 
         ga('create', 'UA-50041591-1', 'auto');
-        ga('send', 'pageview');
-        ga('set', '&uid', "BTCHomeWidget");
-
-        //Constants
-        var MEDIA_BASE = 'http://api.ooyala.com';
-        var MEDIA_PATH_BASE = '/v2/';
-
-        //Globals for media calls
-        var m_path;
-        var m_params;
-
-        //Credentials for Ooyala (global)
-        var api_key = "VmZ3kxOkk4Bm_RPLvXTM3ckfuX_m.JE2G1";
-        var secret = "hiPYJoqLqe9Fkwx0Cg5AS04YhGN8T3fdBw0jLk1n";
-        var expires = Math.round((new Date().getTime('1/1/1970') / 1000)) + (24 * 60);
 
         //Load Stylesheets
         var cssId = "";
         var head = "";
         var link = "";
-        cssId = 'BTCSCSS';
+        cssId = 'BTCcss';
         if (!$d.getElementById(cssId)) {
             head = $d.getElementsByTagName('head')[0];
             link = $d.createElement('link');
@@ -92,217 +132,209 @@
             link.media = 'all';
             head.appendChild(link);
         }
-        cssId = 'PermMarkCSS';
-        if (!$d.getElementById(cssId)) {
-            head = $d.getElementsByTagName('head')[0];
-            link = $d.createElement('link');
-            link.id = cssId;
-            link.rel = 'stylesheet';
-            link.type = 'text/css';
-            link.href = 'http://fonts.googleapis.com/css?family=Permanent+Marker';
-            link.media = 'all';
-            //head.appendChild(link);
-        }
-        //Load Ooyala Script
-        //$j.getScript("http://player.ooyala.com/v3/8429b6a60f6e42c493657dd629122e66?namespace=JYPlayer");
-
         //Start loading content at the location of the supplied script tag.
-        var btc_div = $d.createElement('div');
-        btc_div.id = 'widget-home-btc';
+        btc_div = $d.createElement('div');
+        btc_div.id = 'btc-widget-home';
 
-        var btc = $d.getElementById('BTCHomeWidget');
+        var btc = $d.getElementById(SCRIPT_ID);
         btc.parentNode.insertBefore(btc_div, btc);
 
         //Load the HTML
-        $j('#widget-home-btc').append('<div id="blurb"><a href="#blurb">Daily 10 Seconds with Dana Carvey</a></div>');
-        $j('#widget-home-btc').append('<div class="btc-widget-left"></div>');
-        $j('.btc-widget-left').append('<div class="widget-btc-' + WIDGET_SIZE + '"></div>');
-        //menu
-        $j('.widget-btc-' + WIDGET_SIZE + '').append('<div class="header-btc" id="widget-header-btc"></div>');
-        $j('.widget-btc-' + WIDGET_SIZE + '').append('<span id="watchnow">Watch new comics voiced by Dana Carvey, David Spade, Julianne Moore, Chris Rock and many more!<br><a href="http://www.charlotteobserver.com/beyondcomics"><img src="' + BASE_HREF + '/img/watchnow.png"></img></span>');
-        //$j('.widget-btc-' + WIDGET_SIZE + '').append('<div class="suspensor-btc" ></div>');
-        //$j('.suspensor-btc').append('<div><img src="' + BASE_HREF + '/img/PineBros' + WIDGET_SIZE + '.png"></img></div>');
-        $j('.widget-btc-' + WIDGET_SIZE + '').append('<div class="openB-btc"></div>');
-        if (OPEN_VAL) {
-            $j(".openB-btc").css(OPEN_VAL, "0");
+
+        //$j('#btc-widget-home').append('<div class="btc-widget-left"></div>');
+        $j('#btc-widget-home').append('<div id="btc-widget-bground"></div>');
+        $j('#btc-widget-bground').css('width', WIDGET_WIDTH);
+        $j('#btc-widget-bground').css('height', WIDGET_HEIGHT);
+        $j('#btc-widget-bground').append('<a href="#btc-widget-bground"></a>');
+        $j('#btc-widget-bground').append('<div id="btc-widget-header"></div>');
+        $j('#btc-widget-bground').append('<div id="btc-widget-title"></div>');
+        $j('#btc-widget-bground').append('<div id="btc-widget-blurb">Watch Dana do the news as Tom Rathkite.  You can also see a slew of animated cartoons voiced by David Spade, Chris Rock, Julianne Moore, Kevin Nealon + more...  <span>Watch Now &#187;</span></div>');
+
+		if(mktg || SHOW_ADS){
+        	//Advertisement below widget
+        	$j('#btc-widget-home').append('<div id="btc-widget-ad-imp" ></div>');
+        	$j('#btc-widget-ad-imp').append('<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><ins class="adsbygoogle" style="display:inline-block;width:300px;height:50px" data-ad-client="ca-pub-5403475582289341" data-ad-slot="3892434911"></ins><script>(adsbygoogle = window.adsbygoogle || []).push({});</script>');
         }
-        //console.log($j(".openB-btc"));
-        $j('.widget-btc-' + WIDGET_SIZE + '').append('<div class="playbtn-btc-' + WIDGET_SIZE + '"></div>');
-        //float left
-        $j('.openB-btc').append('<div class="divL-btc"></div>');
-        ///float center
-        $j('.openB-btc').append('<div class="divC-btc"></div>');
-        $j('.divC-btc').append('<div class="video-btc"></div>');
-        $j('.video-btc').append('<div class="top-btc"></div>');
-        $j('.top-btc').append('<div class="top-title-btc" id="widget-title-in-btc"></div>');
-        $j('.top-btc').append('<div class="top-link-btc" onclick="javascript:window.location.href =\'http://www.charlotteobserver.com/beyondcomics/\'"></div>');
-        $j('.video-btc').append('<div class="player-btc" id="video-player-btc">sss</div>');
-        $j('#video-player-btc').html("<div id='ooyalaplayer-btc' class='ooyalaplayer-btc'>Loading Video...</div>");
-        //float right
-        $j('.openB-btc').append('<div class="divR-btc"></div>');
-        $j('.divR-btc').append('<div class="close-btc" id="widget-close-btc"></div>');
-        $j('.divR-btc').append('<div class="suspensorB-btc"></div>');
 
-        $j("#widget-header-btc, .playbtn-btc-" + WIDGET_SIZE).click(function () {
-            $j('.complexListingBox').css('overflow', 'visible');
-            $j('.openB-btc').toggle("slow");
+        $j('#btc-widget-bground').append('<div id="btc-widget-playbtn"></div>');
+        $j('#btc-widget-bground').append('<div id="btc-widget-open-bground"></div>');
+        if(mktg || SHOW_ADS){
+        	var imgURL = BASE_HREF + '/img/bottomBG.jpg';
+        	//We need to make the open widget wide enough to show advertising
+        	$j("#btc-widget-open-bground").css("background-image", "url(" + imgURL + ")");
+        	$j("#btc-widget-open-bground").css("width","950px");
+        }
 
-            var playerConfiguration = {
-                playlistsPlugin: {
-                    "data": ["126f89d134914e75bebf965c8472425c"]
-                },
-                autoplay: true,
-                loop: false,
-                height: 420,
-                width: 472,
-                useFirstVideoFromPlaylist: true
-            };
-            videoplayerJY = JYPlayer.Player.create('ooyalaplayer-btc', '', playerConfiguration);
-            videoplayerJY.subscribe('played', 'myPage', function (eventName) {
-				if(getUrlParameter('tji') !== 'undefined'){
-					//do nothing
-            	}else{
-					$j('.openB-btc').toggle("slow");
-					$j('.complexListingBox').css('overflow', 'hidden');
-					$j('.suspensorB-btc').html('');
-					videoplayerJY.destroy();
+        //Forces the widget to open to the left or to the right.
+        if (OPEN_VAL) {
+            OPEN_VAL = OPEN_VAL === 'right' ? 'left' : 'right';
+            $j("#btc-widget-open-bground").css(OPEN_VAL, "0");
+        }
+
+        $j('#btc-widget-open-bground').append('<div id="btc-widget-open-divL"></div>');
+        $j('#btc-widget-open-bground').append('<div id="btc-widget-open-divC"></div>');
+        if(mktg || SHOW_ADS){
+        	//moves the center div to the right to align the right div for the close button
+            $j("#btc-widget-open-divC").css("width","790px");
+        }
+        $j('#btc-widget-open-bground').append('<div id="btc-widget-open-divR"></div>');
+        $j('#btc-widget-open-divC').append('<div id="btc-widget-open-slide"></div>');
+        if(mktg || SHOW_ADS){
+        	//AdSense Ad
+        	$j('#btc-widget-open-divC').append('<div id="btc-widget-open-ad"><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-5403475582289341" data-ad-slot="4950365717"></ins><script>(adsbygoogle = window.adsbygoogle || []).push({});</script></div>');
+        }
+        $j('#btc-widget-open-slide').append('<div id="btc-widget-open-more-btn"></div>');
+        $j('#btc-widget-open-slide').append('<div id="btc-widget-open-title"></div>');
+        $j('#btc-widget-open-slide').append('<div id="btc-widget-open-player"></div>');
+        $j('#btc-widget-open-divR').append('<div id="btc-widget-open-close-btn"></div>');
+
+        $j('#btc-widget-header, #btc-widget-playbtn, #btc-widget-title').click(function () {
+            openWidget();
+        });
+
+        $j('#btc-widget-open-more-btn, #btc-widget-blurb span').click(function () {
+            redirectToGrid(GRID_URL);
+        });
+
+        $j("#btc-widget-open-close-btn").click(function () {
+            if (!mktg) {
+                ga('send', 'event', src + 'widget', 'click', 'closed');
+                $j('#btc-widget-open-bground').toggle("slow");
+                OO.destroy();
+            }
+        });
+
+        function redirectToGrid(url) {
+            window.location.href = url;
+        }
+
+        function openWidget() {
+            ga('send', 'event', src + 'widget', 'click', 'opened');
+            $j('#btc-widget-open-bground').toggle("slow");
+    		
+			var playerConfiguration = {
+				playlistsPlugin: {
+					"data": [HOME_PL]
+				},
+				autoplay: true,
+				loop: false,
+				height: 419,
+				width: 474,
+				useFirstVideoFromPlaylist: true
+			};
+			OO = JYPlayer.Player.create('btc-widget-open-player', '', playerConfiguration);
+
+            ga('send', 'event', src + 'widgetplaylist', 'created', $j('#btc-widget-title').html());
+            var playings = 0;
+            var playeds = 0;
+            var playingtitle = "";
+            var comic = "";
+            OO.subscribe('playing', 'video', function (eventName) {
+                if (OO.getDescription() != playingtitle) {
+                    playings++;
+                    playingtitle = OO.getDescription();
+                    comic = OO.getTitle();
+                    var evt_title = comic + ' : #' + playings + ' (' + playingtitle + ')';
+                    ga('send', 'event', src + 'widgetplaylist', 'playstarted', evt_title);
                 }
             });
-        });
-
-        $j("#widget-close-btc").click(function () {
-        	if(getUrlParameter('tji') !== 'undefined'){
-				//do nothing
-            }else{
-				$j('.openB-btc').toggle("slow");
-				$j('.complexListingBox').css('overflow', 'hidden');
-				$j('.suspensorB-btc').html('');
-				videoplayerJY.destroy();
-            }
-        });
-
-        $j(document).ready(function () {
-			if(getUrlParameter('tji') != 'undefined'){
-				console.log("BTC Log: Special for marketing");
-				$j('#blurb').find('a')[0].click();
-				//$j('#widget-header-btc')[0].click();
-				
-				$j('.complexListingBox').css('overflow', 'visible');
-				$j('.openB-btc').css('display','block');
-				//$j('.openB-btc').toggle("slow");
-
-				var playerConfiguration = {
-					playlistsPlugin: {
-						"data": ["126f89d134914e75bebf965c8472425c"]
-					},
-					autoplay: true,
-					loop: false,
-					height: 420,
-					width: 472,
-					useFirstVideoFromPlaylist: true
-				};
-				videoplayerJY = JYPlayer.Player.create('ooyalaplayer-btc', '', playerConfiguration);
-            }
-        });
-
-        //Helper methods
-        var sortObjectByKey = function (obj) {
-            var keys = [];
-            var sorted_obj = {};
-            for (var key in obj) {
-                if (obj.hasOwnProperty(key)) {
-                    keys.push(key);
+            OO.subscribe('played', 'video', function (eventName) {
+                playeds++;
+                var evt_title = comic + ' : #' + playeds + ' (' + playingtitle + ')';
+                ga('send', 'event', src + 'widgetplaylist', 'played', evt_title);
+                if (!mktg) {
+                    ga('send', 'event', src + 'widget', 'closed', 'auto-closed');
+                    $j('#btc-widget-open-bground').toggle("slow");
+                    OO.destroy();
                 }
-            }
-            keys.sort();
-            $j.each(keys, function (i, key) {
-                sorted_obj[key] = obj[key];
             });
-            return sorted_obj;
-        };
-        var genurlandwrite = function (method, path, params, func) {
-            params.api_key = api_key;
-            params.expires = expires;
+            OO.subscribe('error', 'video', function (eventName, payload) {
+                ga('send', 'event', src + 'widgetplayerror', eventName + ': ' + payload);
+            });
+        }
 
-            params = sortObjectByKey(params);
 
-            var stringToSign = secret + method + MEDIA_PATH_BASE + path;
-            var key;
-            for (key in params) {
-                stringToSign += key + '=' + params[key];
-            }
+        getWidgetInfo();
 
-            var hash = CryptoJS.SHA256(stringToSign);
-            var hashBase64 = CryptoJS.enc.Base64.stringify(hash);
-            signature = encodeURIComponent(hashBase64.substring(0, 43).replace(/=+$/, ''));
-            var url = MEDIA_BASE + MEDIA_PATH_BASE + path + '?';
-            params.signature = signature;
-            for (key in params) {
-                url += "&" + key + '=' + params[key];
-            }
-            switch (func) {
-                case 'getWidgetFeed':
-                    getWidgetFeed(url);
-                    break;
-            }
-        };
+        if (mktg) {
+            //Move widget to top of page
+            clickit($j('#btc-widget-bground').find('a')[0]);
 
-        //Get widget playlist
-        m_path = 'labels/a5c5155ef4d24828bf84f9e9b515d8dd/assets';
-        m_params = {};
-        //genurlandwrite('GET', m_path, m_params, 'getWidgetFeed');
-        constructWidget('Daily 10 Seconds with Dana Carvey', 'http://cf.c.ooyala.com/g4cXl5bjoEKtIjw1jcTvIo6lD3bMw0vS/promo230372342');
+            //Automatically open widget
+            window.setTimeout(function () {
+                openWidget();
+                //If playlist sent is not for this page, redirect to the grid
+                window.setTimeout(function () {
+                    if (pl !== HOME_PL) {
+                        var url = GRID_URL + '?' + param + '=' + pl;
+                        console.log('BTC Log: Redirected to ' + url);
+                        redirectToGrid(url);
+                    }
+                }, 2000);
+            }, 2000);
+        }
 
-        function getWidgetFeed(url) {
+        function getWidgetInfo() {
+            var url = BASE_HREF + '/php/BTC_Home.php?pl=' + HOME_PL;
             $j.ajax({
                 url: url,
-                dataType: 'text',
+                dataType: 'json',
+                crossDomain: true,
                 success: function (xml) {
                     console.log("BTC Log: Retrieved feed");
-                    xml = JSON.parse(xml);
-                    alert(xml.items[0].preview_image_url);
                     constructWidget(xml);
                 },
                 error: function (xml) {
                     console.log("BTC Log: Can't connect to video server");
-                    //alert("can't connect to video server");
                 }
             });
         }
 
-        /*function constructWidget(xml) {
+        function constructWidget(xml) {
             console.log("BTC Log: Constructing video");
-            console.log("BTC Log: " + xml.items[0].asset_type);
-            console.log("BTC Log: Title " + xml.items[0].name);
-            console.log("BTC Log: Embed " + xml.items[0].embed_code);
-            alert(xml.items[0].preview_image_url);
-            jQueryitem = xml;
-            $j('#widget-header-btc').html("<div class='widget-preview-btc-'" + WIDGET_SIZE + "><img class='widget-preview-btc-img-" + WIDGET_SIZE + "' src='" + xml.items[0].preview_image_url + "'></div>");
-            $j('#widget-title-btc').html("" + xml.items[0].name + "");
-            $j('#widget-title-in-btc').html("" + xml.items[0].name + "");
-        }*/
-        function constructWidget(name, imgurl) {
-            console.log("BTC Log: Constructing video");
-            
-            console.log("BTC Log: Title " + name);
-            console.log("BTC Log: Embed " + imgurl);
-            $j('#widget-header-btc').html("<div class='widget-preview-btc-'" + WIDGET_SIZE + "><img class='widget-preview-btc-img-" + WIDGET_SIZE + "' src='" + imgurl + "'></div>");
-            $j('#widget-title-btc').html("" + name + "");
-            $j('#widget-title-in-btc').html("" + name + "");
+            var pv_hash = "";
+            if(pl===HOME_PL) pv_hash = "#" + src + "_" + getInits(xml.comic);
+            else if(pl!=="") pv_hash = "#" + src + "_" + getInits(xml.comic) + "_redir";
+            var location = window.location.pathname + pv_hash;
+        	ga('send', 'pageview', location);
+            $j('#btc-widget-header').html("<div id='btc-widget-preview'><img id='btc-widget-thumb' src='" + xml.thumb + "'></div>");
+            $j('#btc-widget-title').html(xml.comic);
+            $j('#btc-widget-open-title').html(xml.comic);
         }
-    	function getUrlParameter(sParam)
-		{
-			var sPageURL = window.location.search.substring(1);
-			var sURLVariables = sPageURL.split('&');
-			for (var i = 0; i < sURLVariables.length; i++) 
-			{
-				var sParameterName = sURLVariables[i].split('=');
-				if (sParameterName[0] == sParam) 
-				{
-					return sParameterName[1];
+
+        function getUrlParameter(sParam) {
+            var sPageURL = window.location.search.substring(1);
+            var sURLVariables = sPageURL.split('&');
+            for (var i = 0; i < sURLVariables.length; i++) {
+                var sParameterName = sURLVariables[i].split('=');
+                if (sParameterName[0] == sParam) {
+                    return sParameterName[1];
+                }
+            }
+            return 'undefined';
+        }
+
+        function clickit(elem) {
+            if (!elem) { 
+                window.setTimeout(function () {
+                    clickit(elem);
+                }, 100);
+            } else {
+                elem.click();
+            }
+        }
+        
+        function getInits(s){
+			var re = /\b[A-Za-z]/g; 
+			var m;
+			var ret = "";
+			while ((m = re.exec(s)) != null) {
+				ret += m;
+				if (m.index === re.lastIndex) {
+					re.lastIndex++;
 				}
 			}
-			return 'undefined';
-		}  
+			return ret.toLowerCase();
+		}
     });
 })();
